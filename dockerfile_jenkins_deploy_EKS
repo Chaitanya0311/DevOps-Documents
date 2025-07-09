@@ -56,10 +56,20 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: chaitanyabaki/new:jenkinsaws_v1  # Replace with your Docker Hub image
+        image: chaitanyabaki/new:jenkinsaws_v1  # Replace with your image
         ports:
         - containerPort: 8080
         imagePullPolicy: Always
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        securityContext:
+          privileged: true  # Optional, but helps in some setups
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
 ---
 apiVersion: v1
 kind: Service
@@ -73,5 +83,6 @@ spec:
     app: jenkins
   ports:
   - protocol: TCP
-    port: 80        # Port exposed by LoadBalancer
-    targetPort: 8080  # Port on the container
+    port: 80
+    targetPort: 8080
+
